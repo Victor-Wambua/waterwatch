@@ -1,0 +1,15 @@
+# STAGING ONLY. Not run on the development machine (no Docker). Terminate TLS in front of this service.
+services:
+  waterwatch:
+    build: .
+    ports: ["4400:4400"]
+    environment:
+      WW_ENV: staging
+      WW_SECRET_KEY: ${WW_SECRET_KEY:?set a long random secret}
+      WW_COOKIE_SECURE: "1"
+      WW_TRUST_PROXY: "1"
+      WW_ALLOW_SIMULATED: "1"   # staging only; forced off when WW_ENV=production
+    volumes: ["ww-data:/data"]
+    restart: unless-stopped
+volumes:
+  ww-data: {}

@@ -1,0 +1,764 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WaterWatch API",
+    "version": "0.1.0",
+    "description": "Session-cookie authenticated JSON API (plus device-signed ingestion). Unsafe methods require the X-CSRF-Token header (GET /api/v1/csrf). Not production ready."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:4400"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "ww_sid"
+      },
+      "csrfHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-CSRF-Token"
+      },
+      "deviceSignature": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-WW-Signature",
+        "description": "HMAC-SHA256 hex of \"<deviceKey>\\n<timestamp>\\n<nonce>\\n<sha256hex(body)>\" with the device secret. Also send X-WW-Device, X-WW-Timestamp (unix seconds), X-WW-Nonce."
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Liveness and database check",
+        "tags": [
+          "ops"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/openapi.json": {
+      "get": {
+        "summary": "This document",
+        "tags": [
+          "ops"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/csrf": {
+      "get": {
+        "summary": "Current CSRF token for the session",
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/ingest/v1/readings": {
+      "post": {
+        "summary": "Ingest a signed batch of sensor readings (idempotent, late readings accepted)",
+        "tags": [
+          "ingestion"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "security": [
+          {
+            "deviceSignature": []
+          }
+        ]
+      }
+    },
+    "/api/v1/reports": {
+      "get": {
+        "summary": "List reports (own reports for reporters; reporter contact only for dispatcher/admin)",
+        "tags": [
+          "reports"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      },
+      "post": {
+        "summary": "Submit a fault report (multipart with optional photo, or JSON). Idempotent on client_uid (roles: reporter)",
+        "tags": [
+          "reports"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/assets": {
+      "get": {
+        "summary": "List assets",
+        "tags": [
+          "assets"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create asset (roles: dispatcher, org_admin)",
+        "tags": [
+          "assets"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{id}": {
+      "get": {
+        "summary": "Get asset",
+        "tags": [
+          "assets"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update asset (roles: dispatcher, org_admin)",
+        "tags": [
+          "assets"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/work-orders": {
+      "get": {
+        "summary": "List work orders (technicians: own only)",
+        "tags": [
+          "work-orders"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a work order from reports (roles: dispatcher, org_admin)",
+        "tags": [
+          "work-orders"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/work-orders/{id}": {
+      "get": {
+        "summary": "Get a work order with events and materials",
+        "tags": [
+          "work-orders"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/work-orders/{id}/assign": {
+      "post": {
+        "summary": "Assign a technician (roles: dispatcher, org_admin)",
+        "tags": [
+          "work-orders"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/work-orders/{id}/transition": {
+      "post": {
+        "summary": "Move a work order through the state machine (note required for cancel / send back)",
+        "tags": [
+          "work-orders"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/sensors": {
+      "get": {
+        "summary": "Sensors with health, plus open alerts",
+        "tags": [
+          "sensors"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/sensors/{id}/readings": {
+      "get": {
+        "summary": "Readings for a sensor (from/to epoch ms)",
+        "tags": [
+          "sensors"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/sensors/health-check": {
+      "post": {
+        "summary": "Run the sensor health evaluation now (roles: dispatcher, org_admin)",
+        "tags": [
+          "sensors"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/analytics": {
+      "get": {
+        "summary": "Analytics (outages, MTTR, repeat failures, downtime, cost, SLA, production readings)",
+        "tags": [
+          "analytics"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/v1/audit/verify": {
+      "get": {
+        "summary": "Verify the audit hash chain for the organisation (roles: org_admin, auditor)",
+        "tags": [
+          "audit"
+        ],
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not permitted"
+          },
+          "404": {
+            "description": "Not found (also used for other tenants' records)"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@ import { serve } from '@hono/node-server';
 import { loadConfig } from './core/config.ts';
 import { openDb, SystemDb } from './db/index.ts';
 import { createApp } from './web/app.ts';
-import { startJobs } from './jobs.ts';
+import { runJobs, startJobs } from './jobs.ts';
 import { seedDemo } from './scripts/seed.ts';
 
 const cfg = loadConfig();
@@ -16,6 +16,7 @@ if (cfg.seedOnStart && !rt.sys.get('SELECT 1 AS x FROM organisations LIMIT 1')) 
   if (!cfg.seedPassword) console.log('Generated seed password:', r.password);
 }
 
+try { runJobs(rt); } catch (e) { console.error('startup jobs failed', e instanceof Error ? e.message : e); }
 const app = createApp(rt);
 const timer = startJobs(rt);
 const server = serve({ fetch: app.fetch, port: cfg.port, hostname: cfg.host }, (i) => console.log(`WaterWatch listening on http://${cfg.host}:${i.port} (env=${cfg.env})`));

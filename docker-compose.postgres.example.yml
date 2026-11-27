@@ -1,0 +1,10 @@
+# RESERVED / NOT FUNCTIONAL: the application currently ships a SQLite (node:sqlite) data layer only.
+# SQL is kept portable and isolated in src/repo + src/db so a PostgreSQL adapter can be added (see docs/ARCHITECTURE.md).
+# This file documents the intended topology; it has not been run and the app cannot use it yet.
+services:
+  db:
+    image: postgres:16
+    environment: { POSTGRES_PASSWORD: ${PG_PASSWORD:?}, POSTGRES_DB: waterwatch }
+    volumes: ["pg-data:/var/lib/postgresql/data"]
+volumes:
+  pg-data: {}

@@ -78,3 +78,8 @@ a.row,.row{text-decoration:none;color:var(--ink)}
 .row[aria-current=true] .sub,.row:hover .sub{color:var(--on-brand-soft)}
 .charts{align-items:start}
 .btnrow select,.btnrow input{width:auto;min-width:120px}
+.phonebody[hidden],form[hidden],[hidden]{display:none!important}
+.photo{flex-wrap:wrap;padding:8px;height:auto;min-height:110px}
+.photo .btn{white-space:normal}
+.photo input[type=file]{max-width:100%;font-size:.85rem}
+@media (max-width:860px){.top .hint{display:none}.top .btn.sm{min-height:36px}}
