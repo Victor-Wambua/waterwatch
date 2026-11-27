@@ -33,7 +33,7 @@ export function outagesPerWeek(reports: ReportRow[], from: number, to: number, o
 }
 
 export type WoRow = { id: string; asset_id: string; title: string; kind: string; status: string; priority: string; created_at: number; fault_started_at: number; completed_at: number | null; sla_met?: boolean | null };
-const REPAIR_KINDS = ['reactive', 'contamination', 'sensor'];
+const REPAIR_KINDS = ['reactive', 'contamination'];
 const isDone = (w: WoRow) => (w.status === 'completed' || w.status === 'closed') && w.completed_at !== null;
 
 export function mttr(wos: WoRow[], from: number, to: number, offsetMin: number) {
