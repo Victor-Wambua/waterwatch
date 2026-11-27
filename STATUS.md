@@ -1,4 +1,4 @@
-# WaterWatch — status
-Phase A (design): complete (see design/design-review.md for gaps). Phase B (build): not started. Local git only; no GitHub.
-Prototype: `cd tools && npm install && node serve.mjs ../design 4400` -> http://localhost:4400/prototype/
-Verification: click-through 70/70 passed, 0 console errors; contrast 62 token pairs + 2,422 rendered text nodes, 0 failures.
+# WaterWatch status
+Phase A (design): complete. Phase B (build): complete as an MVP, **not production ready**; local git only, nothing pushed or deployed.
+Run: `npm ci && npm run seed && npm start` (http://127.0.0.1:4400). Tests: 559 unit/integration pass, 6 Playwright journeys pass (plus 30 screenshot captures), lint/typecheck clean, `npm audit` 0 vulnerabilities, overall line coverage 97.86%.
+See docs/ACCEPTANCE-REPORT.md and docs/KNOWN-LIMITATIONS.md. Outstanding external dependencies: real devices, MQTT/LoRaWAN adapters, Postgres adapter, Docker build verification, pilot utility, Swahili/public-health review, counsel review.

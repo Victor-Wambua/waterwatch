@@ -1,0 +1,5 @@
+# API
+
+OpenAPI 3.1: `docs/openapi.json` (generated from `src/web/openapi.ts`; served at `/api/v1/openapi.json`; a test asserts every registered API route is documented and vice versa). Session-cookie auth with `X-CSRF-Token` (from `GET /api/v1/csrf`) on unsafe methods; device-signed ingestion (`docs/DEVICE-INTEGRATION.md`). Errors: `{error, message}` with 400/401/403/404/409/422/429/413.
+
+Analytics definitions: outage reports = categories no_water, low_pressure, pump_failure, leak (excluding duplicate/rejected); MTTR = report/fault start to repair completion for reactive and contamination work orders (mean and median, by completion week); repeat failures = assets with 2+ reactive/contamination work orders in the window; downtime = merged [fault start, completion or now] intervals clipped to the window; availability = 1 - downtime/window; cost = sum(qty x unit cost) in integer minor units (KES cents); SLA met = completed before due (pause optional); volumes = rectangle rule over flow readings, gaps reported not estimated. Planned and sensor work orders are excluded from MTTR/downtime/repeats. Non-revenue water is **not** computed.
