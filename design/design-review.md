@@ -13,7 +13,7 @@
 
 ## Verification results (executed)
 - Click-through: 70 checks (35 desktop 1440x900, 35 mobile 390x844), 0 failed, 0 console errors.
-- Contrast: 62 token pairs, 0 failures; 2,430 rendered text nodes (11 routes x light/dark x desktop/mobile), 0 below threshold.
+- Contrast: 62 token pairs, 0 failures; 2,422 rendered text nodes (11 routes x light/dark x desktop/mobile), 0 below threshold.
 - Screenshots were viewed and fixed: map overflowed its pane (scale fix), work-order selects overflowed cards, "Online" bar used warning colour (now green), mobile KPI block pushed map down (compacted).
 
 ## Honest gaps and risks
