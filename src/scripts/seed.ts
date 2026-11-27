@@ -170,7 +170,7 @@ export async function seedDemo(rt: Runtime, dataDirForFile: string, passwordIn?:
       const cutoff = s.mode === 'missing' ? now - 24 * HOUR : s.mode === 'late' ? now - 95 * MIN : now - 3 * MIN;
       const n = Math.floor((hours * HOUR) / step);
       for (let k = n; k >= 0; k--) {
-        const ts = now - k * step - 3 * MIN;
+        const ts = now - k * step - (s.mode === 'late' ? 95 * MIN : 3 * MIN);
         if (ts > cutoff) continue;
         let v = s.base + s.amp * Math.sin(k / 3.2) + (R() - 0.5) * s.amp * 0.3;
         if (s.mode === 'droppress' && k < 24) v -= 1.3;

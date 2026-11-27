@@ -34,7 +34,7 @@ export function securityHeaders(d: Deps) {
   const csp = `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:${tile ? ' ' + tile : ''}; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; worker-src 'self'; manifest-src 'self'`;
   return async (c: Context, next: Next) => {
     await next();
-    c.res.headers.set('Content-Security-Policy', csp);
+    if (!c.res.headers.has('Content-Security-Policy')) c.res.headers.set('Content-Security-Policy', csp);
     c.res.headers.set('X-Content-Type-Options', 'nosniff');
     c.res.headers.set('Referrer-Policy', 'same-origin');
     c.res.headers.set('X-Frame-Options', 'DENY');
