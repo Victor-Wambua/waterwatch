@@ -66,14 +66,12 @@ export class Client {
   private store(res: Response) { for (const sc of res.headers.getSetCookie()) { const [kv] = sc.split(';'); const i = (kv as string).indexOf('='); const k = (kv as string).slice(0, i), v = (kv as string).slice(i + 1); if (/Max-Age=0|expires=Thu, 01 Jan 1970/i.test(sc) || v === '') this.jar.delete(k); else this.jar.set(k, v); } }
   private cookie() { return [...this.jar.entries()].map(([k, v]) => `${k}=${v}`).join('; '); }
   async req(method: string, path: string, init: { form?: Record<string, string>; json?: unknown; headers?: Record<string, string>; raw?: BodyInit; multipart?: FormData; csrf?: boolean } = {}): Promise<Response> {
+    const unsafe = method !== 'GET' && method !== 'HEAD';
+    if (unsafe && init.csrf !== false && !this.csrfTok) await this.refreshCsrf();
     const headers: Record<string, string> = { host: 'localhost', ...(init.headers ?? {}) };
     const c = this.cookie(); if (c) headers['cookie'] = c;
     let body: BodyInit | undefined = init.raw;
-    const unsafe = method !== 'GET' && method !== 'HEAD';
-    if (unsafe && init.csrf !== false) {
-      if (!this.csrfTok) await this.refreshCsrf();
-      headers['x-csrf-token'] ??= this.csrfTok;
-    }
+    if (unsafe && init.csrf !== false) headers['x-csrf-token'] ??= this.csrfTok;
     if (init.form) { headers['content-type'] = 'application/x-www-form-urlencoded'; body = new URLSearchParams({ ...(unsafe && init.csrf !== false ? { _csrf: this.csrfTok } : {}), ...init.form }).toString(); }
     if (init.json !== undefined) { headers['content-type'] = 'application/json'; body = JSON.stringify(init.json); }
     if (init.multipart) { if (unsafe && init.csrf !== false) init.multipart.set('_csrf', this.csrfTok); body = init.multipart; }
@@ -85,7 +83,7 @@ export class Client {
   async refreshCsrf() {
     if (this.jar.has('ww_sid')) { const r = await this.w.app.request('/api/v1/csrf', { headers: { host: 'localhost', cookie: this.cookie() } }); if (r.ok) { this.csrfTok = ((await r.json()) as { csrf: string }).csrf; return; } }
     const page = await this.w.app.request('/login', { headers: { host: 'localhost', cookie: this.cookie() } }); this.store(page);
-    const m = (await page.text()).match(/name="_csrf" value="([0-9a-f]+)"/); this.csrfTok = m?.[1] ?? '';
+    const m = (await page.text()).match(/name="_csrf" value="([A-Za-z0-9_-]+)"/); this.csrfTok = m?.[1] ?? '';
   }
   /** Full login including TOTP enrolment / verification for MFA roles. */
   async login(userKey: string, pw = PW): Promise<Response> {
@@ -93,6 +91,7 @@ export class Client {
     await this.refreshCsrf();
     let res = await this.req('POST', '/login', { form: { email: u.email, password: pw } });
     if (res.status === 303 && res.headers.get('location') === '/login/mfa') {
+      this.csrfTok = ''; await this.refreshCsrf(); // the session now has its own CSRF token
       const page = await (await this.get('/login/mfa')).text();
       const secret = page.match(/id="totp-secret">([A-Z2-7]+)</)?.[1] ?? secretOf(this.w, u.id);
       this.w.rt.advance(31_000); // fresh TOTP step each time (replay protection)
@@ -117,4 +116,32 @@ export function photoForm(buf: Uint8Array, name = 'photo.jpg', type = 'image/jpe
   for (const [k, v] of Object.entries(fields)) fd.set(k, v);
   fd.set('photo', new File([buf as BlobPart], name, { type }));
   return fd;
+}
+
+// ---- common flows used by integration tests ----
+import { submitReport } from '../src/repo/reports.ts';
+import { createFromReports, assignWorkOrder } from '../src/repo/workorders.ts';
+import { registerDevice } from '../src/repo/devices.ts';
+import { savePhoto } from '../src/repo/photos.ts';
+import { handleIngest, signRequest } from '../src/repo/ingest.ts';
+
+export type Flow = { reportId: string; reportRef: string; woId: string; deviceId: string; deviceKey: string; secret: string; sensorId: string; photoId: string };
+/** Org A: a report with a photo, a work order assigned to a_tech, and an active device with one sensor and a reading. */
+export async function makeFlowA(w: World): Promise<Flow> {
+  const rep = w.ctx('a_reporter');
+  const photoId = await savePhoto(rep, 'report', await jpegWithExif());
+  const r = submitReport(rep, { category: 'no_water', text: 'Dry since morning', asset_id: w.assetA, lang: 'en' }, photoId);
+  const disp = w.ctx('a_dispatcher');
+  const woId = createFromReports(disp, { reportIds: [r.id], priority: 'P2', assigneeId: (w.users['a_tech'] as UserRow).id });
+  const dev = registerDevice(w.ctx('a_admin'), { name: 'Alpha meter', asset_id: w.assetA, origin: 'real', sensors: [{ key: 'flow', kind: 'flow', unit: 'm³/h', expected_interval_s: 60, min_valid: 0, max_valid: 500, stuck_count: 5, role: 'production' }] });
+  const sensorId = (w.rt.sys.get<{ id: string }>('SELECT id FROM sensors WHERE device_id = :d', { d: dev.id }) as { id: string }).id;
+  void assignWorkOrder;
+  return { reportId: r.id, reportRef: r.ref, woId, deviceId: dev.id, deviceKey: dev.deviceKey, secret: dev.secret, sensorId, photoId };
+}
+
+export function ingestRaw(w: World, deviceKey: string, secret: string, payload: unknown, o: { ts?: number; nonce?: string; sig?: string; now?: number; rawBody?: string } = {}) {
+  const now = o.now ?? w.rt.now;
+  const rawBody = o.rawBody ?? JSON.stringify(payload);
+  const ts = String(o.ts ?? Math.floor(now / 1000)), nonce = o.nonce ?? Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  return handleIngest(w.rt.db, w.rt.cfg, { deviceKey, timestamp: ts, nonce, signature: o.sig ?? signRequest(secret, deviceKey, ts, nonce, rawBody), rawBody, now });
 }
