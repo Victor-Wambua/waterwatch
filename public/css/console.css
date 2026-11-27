@@ -1,0 +1,80 @@
+/* WaterWatch application additions to the design-system styles (class-based; no inline styles so CSP can stay strict) */
+.stm{fill:var(--c-soft);stroke:var(--c);stroke-width:2.2;stroke-linejoin:round}
+.stm .g{fill:none;stroke:var(--c);stroke-width:2.5}
+.stm.operational{--c:var(--ok);--c-soft:var(--ok-soft)}.stm.degraded{--c:var(--warn);--c-soft:var(--warn-soft)}.stm.down{--c:var(--bad);--c-soft:var(--bad-soft)}
+.stm.contam{--c:var(--contam);--c-soft:var(--contam-soft)}.stm.unknown{--c:var(--unk);--c-soft:var(--unk-soft)}
+.marker{cursor:pointer;text-decoration:none}.marker.dim{opacity:.25}
+.pipe{stroke:var(--line-strong);stroke-width:3;stroke-linecap:round}
+.water{fill:var(--brand-soft);opacity:.6}.river{fill:none;stroke:var(--brand);stroke-width:10;opacity:.35}
+.sdot{fill:var(--brand);stroke:var(--surface);stroke-width:1.5}
+.mlabel{font-size:11px;font-weight:700;fill:var(--ink);paint-order:stroke;stroke:var(--sunken);stroke-width:3}
+.legend{list-style:none;margin:0;padding:8px 0}
+.legend li{display:inline-flex;align-items:center;gap:4px}
+.bar{fill:var(--chart-a)}.pt{fill:var(--chart-b)}.ln{fill:none;stroke:var(--chart-a);stroke-width:2.5}
+.cv{font-size:11px;font-weight:700;fill:var(--ink)}.cl{font-size:10px;fill:var(--ink-2)}.axis{stroke:var(--chart-grid);stroke-width:1}
+.gap{fill:var(--bad-soft);stroke:var(--bad);stroke-dasharray:4 3}.gt{font-size:11px;font-weight:700;fill:var(--bad)}.gt.warn{fill:var(--warn)}
+.chart{margin:0;background:var(--surface);border:1.5px solid var(--rule);border-radius:10px;padding:10px}
+.chart svg{width:100%;height:auto;display:block}
+.hbars{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.hbars li{display:grid;grid-template-columns:minmax(90px,1.2fr) 2fr minmax(60px,auto);gap:8px;align-items:center}
+.hbars .hb svg{height:12px}.hv{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+.dt summary{cursor:pointer;color:var(--brand);font-weight:600;margin-top:6px}
+.badge.inline{background:var(--bad);color:var(--surface);border-radius:999px;padding:0 7px;font-size:.78rem;margin-left:4px}
+.rail .badge{margin-left:auto;background:var(--bad);color:var(--surface);border-radius:999px;padding:0 7px;font-size:.78rem}
+.inl{display:inline}
+.flash{padding:10px 14px;border-radius:8px;margin-bottom:12px;font-weight:600;border:1.5px solid}
+.flash.ok{background:var(--ok-soft);color:var(--ok);border-color:var(--ok)}.flash.err{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.field{margin-bottom:12px}
+.field .hint{margin:4px 0 0}
+main.plain{max-width:640px;margin:0 auto;padding:16px}
+main.wide{max-width:none}
+.authcard{background:var(--surface);border:1.5px solid var(--rule);border-radius:12px;padding:20px;margin-top:24px}
+.authcard h1{margin-bottom:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:860px){.row2,.row3{grid-template-columns:1fr}}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{font-family:ui-monospace,Menlo,monospace;font-size:.85rem;background:var(--sunken);padding:1px 6px;border-radius:4px}
+.secret{font-family:ui-monospace,Menlo,monospace;background:var(--sunken);border:1.5px dashed var(--line-strong);padding:10px;border-radius:8px;word-break:break-all;user-select:all}
+.tl .meta{color:var(--ink-2);font-size:.85rem}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.tabs a{padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:600;color:var(--ink);border:1.5px solid var(--rule);min-height:40px;display:inline-flex;align-items:center}
+.tabs a[aria-current=page]{background:var(--brand-soft);color:var(--on-brand-soft);border-color:var(--brand)}
+.alertbar.warnbar{border-color:var(--warn);background:var(--warn-soft)}.alertbar.warnbar,.alertbar.warnbar b,.alertbar.warnbar span{color:var(--warn)}
+.alertbar a{color:inherit;font-weight:700}
+.report{border:1.5px solid var(--rule);border-radius:10px;background:var(--surface);padding:10px;margin-bottom:8px}
+.report.contam{border:2.5px solid var(--contam)}
+.report .meta{color:var(--ink-2);font-size:.85rem}
+.card h2{margin-bottom:8px}.card+.card{margin-top:12px}
+.stack>*+*{margin-top:12px}
+.sensorgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.photoimg{max-width:100%;border-radius:8px;border:1.5px solid var(--rule)}
+.dlgf h2{margin-bottom:4px}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.hp{position:absolute;left:-5000px}
+.catgrid .cat{font:inherit}
+.langbar{display:flex;gap:6px}
+.offbar.off{background:var(--warn-soft);color:var(--warn)}
+.offbar[hidden],.queue[hidden],.safety[hidden],.err[hidden]{display:none}
+.queue{border:1.5px dashed var(--line-strong);border-radius:12px;padding:10px}
+.photo img{max-height:100px;border-radius:8px}
+.photo input[type=file]{border:0;min-height:0;width:auto}
+.legalnote{font-size:.85rem;color:var(--ink-2)}
+.pill-list{display:flex;gap:6px;flex-wrap:wrap}
+table .btn.sm{min-height:32px}
+.okh{color:var(--ok)}
+.cat input{position:absolute;opacity:0;pointer-events:none}
+.cat{position:relative}
+.cat.sel{border-color:var(--brand);background:var(--brand-soft);color:var(--on-brand-soft);box-shadow:inset 0 0 0 2px var(--brand)}
+.cat.c-contam.sel{background:var(--contam-soft);color:var(--contam);box-shadow:inset 0 0 0 2px var(--contam);border-color:var(--contam)}
+.cat:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+.langbar a[aria-current=true]{background:var(--on-brand);color:var(--brand)}
+.phonehead a.btn{color:var(--on-brand);border-color:var(--on-brand);background:transparent;text-decoration:none}
+.phonehead a.btn[aria-current=true]{background:var(--on-brand);color:var(--brand)}
+.leafmap{height:440px}
+.row.job{text-decoration:none;color:inherit}
+a.btn{text-decoration:none}
+a.row,.row{text-decoration:none;color:var(--ink)}
+.row:hover,.row[aria-current=true]{border-color:var(--brand);background:var(--brand-soft);color:var(--on-brand-soft)}
+.row[aria-current=true] .sub,.row:hover .sub{color:var(--on-brand-soft)}
+.charts{align-items:start}
+.btnrow select,.btnrow input{width:auto;min-width:120px}

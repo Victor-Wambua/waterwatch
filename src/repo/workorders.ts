@@ -246,6 +246,7 @@ const addDays = (isoDate: string, n: number) => new Date(Date.parse(isoDate + 'T
 
 /** Generates work orders for schedules due within the lead window. Idempotent: unique (schedule_id, schedule_due). */
 export function generatePlannedWork(ctx: Ctx): number {
+  need(ctx, 'schedule.manage');
   const today = new Date(ctx.now + ctx.settings.tzOffsetMin * 60000).toISOString().slice(0, 10);
   const horizon = addDays(today, PLANNED_LEAD_DAYS);
   const sched = ctx.t.all<{ id: string; asset_id: string; title: string; interval_days: number; next_due: string; priority: Priority }>('SELECT id, asset_id, title, interval_days, next_due, priority FROM maintenance_schedules WHERE org_id = :org AND active = 1 AND next_due <= :h', { h: horizon });

@@ -29,7 +29,7 @@ const ASSETS: [string, string, string, number, number, string, string, string, n
   ['A-013', 'Kivuko Pump Station', 'pump', 26, 30, 'operational', 'ngo', 'NGO (programme)', 2022, { power_kw: 15, head_m: 60 }],
   ['A-014', 'Mwamba Water Point', 'waterpoint', 86, 48, 'operational', 'community', 'Community committee', 2017, { source: 'Hand pump', users_served: 350 }],
   ['A-015', 'Eastgate Valve V-31', 'valve', 74, 56, 'degraded', 'utility', 'Mto Kijani Water Company', 2013, { size_mm: 150 }],
-  ['A-016', 'Ridge Main (DN300)', 'pipe', 49, 31, 'operational', 'utility', 'Mto Kijani Water Company', 2012, { length_m: 2400, diameter_mm: 300, material: 'Ductile iron' }]
+  ['A-016', 'Ridge Main (DN300)', 'pipe', 58, 34, 'operational', 'utility', 'Mto Kijani Water Company', 2012, { length_m: 2400, diameter_mm: 300, material: 'Ductile iron' }]
 ];
 const LINKS = [['A-001', 'A-003'], ['A-003', 'A-002'], ['A-002', 'A-011'], ['A-011', 'A-007'], ['A-011', 'A-005'], ['A-001', 'A-008'], ['A-008', 'A-005'], ['A-005', 'A-015'], ['A-015', 'A-009'], ['A-015', 'A-014'], ['A-007', 'A-012'], ['A-012', 'A-010'], ['A-011', 'A-004'], ['A-004', 'A-006'], ['A-013', 'A-004'], ['A-013', 'A-003']];
 // Fictional coordinates in a small box (the demo "Kijani County"), within the default Kenya service-area bounds.

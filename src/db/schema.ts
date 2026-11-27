@@ -132,5 +132,6 @@ CREATE INDEX audit_chain ON audit_log(chain, seq);
 CREATE TRIGGER audit_no_update BEFORE UPDATE ON audit_log BEGIN SELECT RAISE(ABORT, 'audit_log is append-only'); END;
 CREATE TRIGGER audit_no_delete BEFORE DELETE ON audit_log BEGIN SELECT RAISE(ABORT, 'audit_log is append-only'); END;
 `
-  }
+  },
+  { id: 2, name: 'report_submit_ms', sql: 'ALTER TABLE reports ADD COLUMN submit_ms INTEGER;' }
 ];

@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+import { executablePath } from './tests/e2e/browser.ts';
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -6,7 +7,7 @@ export default defineConfig({
   workers: 1,
   fullyParallel: false,
   reporter: [['list'], ['json', { outputFile: 'test-results/e2e.json' }]],
-  use: { baseURL: 'http://127.0.0.1:4401', trace: 'off', actionTimeout: 10000 },
+  use: { baseURL: 'http://127.0.0.1:4401', trace: 'off', actionTimeout: 10000, launchOptions: { executablePath } },
   globalSetup: './tests/e2e/global-setup.ts',
   webServer: {
     command: 'node src/server.ts',

@@ -24,7 +24,8 @@ export const reportInput = z.object({
   lng: z.union([z.number(), z.string()]).optional().nullable(),
   accuracy_m: z.union([z.number(), z.string()]).optional().nullable(),
   client_uid: z.string().trim().regex(/^[A-Za-z0-9_-]{8,64}$/).optional().nullable().transform((v) => v || null),
-  observed_at: z.union([z.number(), z.string()]).optional().nullable()
+  observed_at: z.union([z.number(), z.string()]).optional().nullable(),
+  submit_ms: z.union([z.number(), z.string()]).optional().nullable()
 });
 export type ReportInput = z.input<typeof reportInput>;
 
@@ -86,9 +87,9 @@ export function submitReport(ctx: Ctx, raw: ReportInput, photoId: string | null)
   const id = newId();
   const ref = nextRef(ctx, 'R');
   ctx.t.tx(() => {
-    ctx.t.run(`INSERT INTO reports (id, org_id, ref, asset_id, category, text, lang, lat, lng, accuracy_m, reporter_id, client_uid, status, photo_id, origin, observed_at, created_at)
-      VALUES (:id,:org,:ref,:a,:c,:t,:l,:lat,:lng,:acc,:u,:cu,'new',:p,'user_submitted',:obs,:now)`,
-      { id, ref, a: assetId, c: d.category, t: d.text, l: d.lang, lat, lng, acc: acc !== null && Number.isFinite(acc) && acc >= 0 ? acc : null, u: ctx.actor.id, cu: d.client_uid, p: photoId, obs: observed, now: ctx.now });
+    ctx.t.run(`INSERT INTO reports (id, org_id, ref, asset_id, category, text, lang, lat, lng, accuracy_m, reporter_id, client_uid, status, photo_id, origin, observed_at, created_at, submit_ms)
+      VALUES (:id,:org,:ref,:a,:c,:t,:l,:lat,:lng,:acc,:u,:cu,'new',:p,'user_submitted',:obs,:now,:sms)`,
+      { id, ref, a: assetId, c: d.category, t: d.text, l: d.lang, lat, lng, acc: acc !== null && Number.isFinite(acc) && acc >= 0 ? acc : null, u: ctx.actor.id, cu: d.client_uid, p: photoId, obs: observed, now: ctx.now, sms: (() => { const n = Number(d.submit_ms); return Number.isFinite(n) && n > 0 && n < 3600000 ? Math.round(n) : null; })() });
     audit(ctx, 'report.submitted', 'report', id, { ref, category: d.category, asset: assetId });
     if (d.category === 'contamination') {
       if (assetId) {
