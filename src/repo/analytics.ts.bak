@@ -1,0 +1,55 @@
+import { availability, costSummary, downtimeByAsset, flowVolume, mttr, outagesPerWeek, repeatFailures, slaCompliance, type WoRow } from '../domain/analytics.ts';
+import { computeSla } from '../domain/workorder.ts';
+import { need, type Ctx } from './ctx.ts';
+
+const DAY = 86400000;
+export type AnalyticsOpts = { weeks?: number; to?: number };
+
+export function buildAnalytics(ctx: Ctx, o: AnalyticsOpts = {}) {
+  need(ctx, 'analytics.read');
+  const weeks = Math.min(Math.max(o.weeks ?? 8, 1), 52);
+  const to = o.to ?? ctx.now;
+  const from = to - weeks * 7 * DAY;
+  const off = ctx.settings.tzOffsetMin;
+  const scope = ctx.actor.scopeOwner;
+  const sc = scope ? ' AND a.owner_name = :scope' : '';
+  const sp = scope ? { scope } : {};
+  const reports = ctx.t.all<{ category: string; status: string; created_at: number }>(`SELECT r.category, r.status, r.created_at FROM reports r LEFT JOIN assets a ON a.id = r.asset_id AND a.org_id = :org WHERE r.org_id = :org AND r.created_at BETWEEN :f AND :t${scope ? ' AND a.owner_name = :scope' : ''}`, { f: from, t: to, ...sp });
+  const wos = ctx.t.all<WoRow & { sla_minutes: number; sla_pause_awaiting: number }>(`SELECT w.id, w.asset_id, w.title, w.kind, w.status, w.priority, w.created_at, w.fault_started_at, w.completed_at, w.sla_minutes, w.sla_pause_awaiting FROM work_orders w JOIN assets a ON a.id = w.asset_id AND a.org_id = :org WHERE w.org_id = :org${sc}`, sp);
+  const assets = ctx.t.all<{ id: string; name: string; code: string }>(`SELECT a.id, a.name, a.code FROM assets a WHERE a.org_id = :org${sc}`, sp);
+  const name = new Map(assets.map((a) => [a.id, `${a.name} (${a.code})`]));
+
+  const outages = outagesPerWeek(reports, from, to, off);
+  const repair = mttr(wos, from, to, off);
+  const repeats = repeatFailures(wos, to - ctx.settings.repeatWindowDays * DAY, to).map((r) => ({ ...r, assetName: name.get(r.assetId) ?? r.assetId }));
+  const down = downtimeByAsset(wos, from, to, to).map((d) => ({ ...d, assetName: name.get(d.assetId) ?? d.assetId, availability: availability(d.hours, from, to) }));
+  const totalDown = down.reduce((a, d) => a + d.hours, 0);
+  const fleetAvailability = assets.length ? assets.reduce((acc, a) => acc + availability(down.find((d) => d.assetId === a.id)?.hours ?? 0, from, to), 0) / assets.length : null;
+
+  const mats = ctx.t.all<{ asset_id: string; category: string; qty: number; unit_cost_minor: number }>(`SELECT w.asset_id, m.category, m.qty, m.unit_cost_minor FROM wo_materials m JOIN work_orders w ON w.id = m.wo_id AND w.org_id = :org JOIN assets a ON a.id = w.asset_id AND a.org_id = :org
+    WHERE m.org_id = :org AND m.created_at BETWEEN :f AND :t${sc}`, { f: from, t: to, ...sp });
+  const cost = costSummary(mats);
+
+  const judged = wos.filter((w) => (w.status === 'completed' || w.status === 'closed') && w.completed_at !== null && (w.completed_at as number) >= from && (w.completed_at as number) <= to).map((w) => {
+    const evs = ctx.t.all<{ ts: number; to_status: 'awaiting_parts' | 'new' }>('SELECT ts, to_status FROM wo_events WHERE org_id = :org AND wo_id = :w', { w: w.id });
+    const s = computeSla({ startMs: w.fault_started_at, minutes: w.sla_minutes, events: evs as never, pauseAwaitingParts: !!w.sla_pause_awaiting, nowMs: to, endMs: w.completed_at });
+    return { sla_met: s.state === 'met' };
+  });
+  const sla = slaCompliance(judged);
+
+  // production / distribution readings, only where sensors with a role are registered; REAL and SIMULATED are never mixed
+  const sensors = ctx.t.all<{ id: string; key: string; role: string; expected_interval_s: number; origin: string; device_name: string; asset_name: string | null }>(
+    `SELECT s.id, s.key, s.role, s.expected_interval_s, d.origin, d.name AS device_name, a.name AS asset_name FROM sensors s JOIN devices d ON d.id = s.device_id AND d.org_id = :org LEFT JOIN assets a ON a.id = s.asset_id AND a.org_id = :org
+     WHERE s.org_id = :org AND s.kind = 'flow' AND s.role IN ('production','distribution')${sc}`, sp);
+  const flows = sensors.map((s) => {
+    const r = ctx.t.all<{ ts: number; value: number }>('SELECT ts, value FROM readings WHERE org_id = :org AND sensor_id = :s AND ts BETWEEN :f AND :t ORDER BY ts', { s: s.id, f: from, t: to });
+    return { sensorId: s.id, key: s.key, role: s.role, origin: s.origin, deviceName: s.device_name, assetName: s.asset_name, readings: r.length, ...flowVolume(r, s.expected_interval_s, off) };
+  });
+
+  return {
+    window: { from, to, weeks }, definitions: { outageCategories: ['no_water', 'low_pressure', 'pump_failure', 'leak'] },
+    outages, totalOutageReports: outages.reduce((a, w) => a + w.count, 0), mttr: repair, repeats, downtime: down, totalDowntimeHours: totalDown, fleetAvailability,
+    cost, sla, flows, openReports: reports.filter((r) => r.status === 'new').length
+  };
+}
+export type Analytics = ReturnType<typeof buildAnalytics>;

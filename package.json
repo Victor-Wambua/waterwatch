@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node src/server.ts",
     "dev": "node --watch src/server.ts",
-    "seed": "node src/scripts/seed.ts",
+    "seed": "node src/scripts/seed-cli.ts",
     "simulate": "node src/sim/simulate.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
