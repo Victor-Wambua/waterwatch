@@ -16,7 +16,7 @@ const dispatcher: Permission[] = [
 
 export const MATRIX: Record<Role, readonly Permission[]> = {
   reporter: ['report.create', 'report.read_own'],
-  technician: ['asset.read', 'wo.read_assigned', 'wo.update_assigned', 'notification.read'],
+  technician: ['wo.read_assigned', 'wo.update_assigned', 'notification.read'],
   dispatcher,
   org_admin: [...dispatcher, 'asset.import', 'device.manage', 'user.manage', 'settings.manage', 'audit.read'],
   auditor: ['asset.read', 'report.read', 'wo.read', 'wo.cost.read', 'sensor.read', 'analytics.read', 'audit.read', 'export'],

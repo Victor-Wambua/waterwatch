@@ -113,7 +113,7 @@ describe('RBAC matrix', () => {
     for (const p of tenant) expect(can('platform_admin', p), p).toBe(false);
   });
   it('reporters can only create and read their own reports', () => { expect([...MATRIX.reporter]).toEqual(['report.create', 'report.read_own']); });
-  it('technicians cannot read all reports, costs, analytics, audit or devices', () => { for (const p of ['report.read', 'wo.cost.read', 'analytics.read', 'audit.read', 'device.manage', 'user.manage', 'wo.create', 'wo.assign', 'wo.confirm'] as const) expect(can('technician', p), p).toBe(false); });
+  it('technicians cannot read all reports, costs, analytics, audit or devices', () => { for (const p of ['asset.read', 'report.read', 'wo.cost.read', 'analytics.read', 'audit.read', 'device.manage', 'user.manage', 'wo.create', 'wo.assign', 'wo.confirm'] as const) expect(can('technician', p), p).toBe(false); });
   it('auditors are read-only', () => { for (const p of PERMISSIONS) if (/write|create|assign|confirm|manage|import|update/.test(p)) expect(can('auditor', p), p).toBe(false); });
   it('only dispatchers and admins can see reporter contact details', () => { for (const r of ROLES) expect(can(r, 'report.reporter_contact')).toBe(r === 'dispatcher' || r === 'org_admin'); });
   it('MFA is required for privileged roles only', () => { expect(ROLES.filter(mfaRequired).sort()).toEqual(['dispatcher', 'org_admin', 'platform_admin']); });
