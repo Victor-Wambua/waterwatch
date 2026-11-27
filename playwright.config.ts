@@ -10,7 +10,7 @@ export default defineConfig({
   use: { baseURL: 'http://127.0.0.1:4401', trace: 'off', actionTimeout: 10000, launchOptions: { executablePath } },
   globalSetup: './tests/e2e/global-setup.ts',
   webServer: {
-    command: 'node src/server.ts',
+    command: 'rm -rf data/e2e.sqlite* data/e2e-files && node src/server.ts',
     url: 'http://127.0.0.1:4401/health',
     reuseExistingServer: false,
     timeout: 30000,
