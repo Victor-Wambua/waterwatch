@@ -2,13 +2,13 @@
 (function () {
   'use strict';
   var root = document.documentElement;
-  try { var t = localStorage.getItem('ww-theme'); if (t) root.setAttribute('data-theme', t); } catch (_e) { /* storage unavailable */ }
+  try { var t = localStorage.getItem('ww-theme'); if (t) root.setAttribute('data-theme', t); } catch (e) { void e; }
   var toggle = document.getElementById('theme-toggle');
   if (toggle) toggle.addEventListener('click', function () {
     var cur = root.getAttribute('data-theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     var next = cur === 'dark' ? 'light' : 'dark';
     root.setAttribute('data-theme', next);
-    try { localStorage.setItem('ww-theme', next); } catch (_e) { /* ignore */ }
+    try { localStorage.setItem('ww-theme', next); } catch (e) { void e; }
   });
   // Dialogs: <button data-dialog="tpl-id"> clones <template id="tpl-id"> into the native <dialog>.
   var dlg = document.getElementById('dlg');

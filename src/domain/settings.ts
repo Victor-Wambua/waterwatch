@@ -20,7 +20,7 @@ export const settingsSchema = z.object({
 });
 export type OrgSettings = z.infer<typeof settingsSchema>;
 export const parseSettings = (json: string | null | undefined): OrgSettings => {
-  let obj: unknown = {};
+  let obj: unknown;
   try { obj = json ? JSON.parse(json) : {}; } catch { obj = {}; }
   const r = settingsSchema.safeParse(obj);
   return r.success ? r.data : settingsSchema.parse({});

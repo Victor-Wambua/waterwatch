@@ -98,7 +98,7 @@
   function send(item) {
     return csrfToken().then(function (token) {
       var fd = new FormData();
-      Object.keys(item.fields).forEach(function (k) { if (item.fields[k] !== '' && item.fields[k] != null) fd.append(k, item.fields[k]); });
+      Object.keys(item.fields).forEach(function (k) { if (item.fields[k] !== '' && item.fields[k] !== null && item.fields[k] !== undefined) fd.append(k, item.fields[k]); });
       fd.append('client_uid', item.uid); fd.append('observed_at', String(item.observedAt));
       if (item.photo) fd.append('photo', item.photo, 'photo.jpg');
       return fetch('/api/v1/reports', { method: 'POST', body: fd, credentials: 'same-origin', headers: { 'X-CSRF-Token': token } });

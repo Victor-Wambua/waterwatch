@@ -54,7 +54,7 @@ export function computeSla(i: SlaInput): SlaResult {
   const dueMs = i.startMs + i.minutes * 60000 + paused;
   const remainingMin = Math.round(((dueMs - ref) / 60000) * 100) / 100;
   let state: SlaState;
-  if (i.endMs != null) state = i.endMs <= dueMs ? 'met' : 'missed';
+  if (i.endMs !== null && i.endMs !== undefined) state = i.endMs <= dueMs ? 'met' : 'missed';
   else if (remainingMin < 0) state = 'breached';
   else if (remainingMin <= Math.min(30, i.minutes * 0.25)) state = 'soon';
   else state = 'ok';

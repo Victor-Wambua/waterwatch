@@ -21,7 +21,6 @@ import { render } from './shell.ts';
 import { ago, barChart, chip, csrf, emptyState, field, fmtDateTime, healthChip, hbarChart, ic, kes, lineChart, opt, originChip, simChip, sparkline, hrs } from './ui.ts';
 import { parseKesToMinor } from '../repo/workorders.ts';
 
-const staff = requireAuth({ roles: ['dispatcher', 'org_admin', 'auditor'] });
 const dispatchers = requireAuth({ roles: ['dispatcher', 'org_admin'] });
 const admins = requireAuth({ roles: ['org_admin'] });
 
