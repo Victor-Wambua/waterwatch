@@ -26,8 +26,8 @@ async function run(vn,vp,mobile){
  await p.selectOption('#fs','down');ok(t('console: filter status'),(await T('h2:has-text("asset")')).startsWith('1 asset'));
  await p.selectOption('#fs','all');await p.fill('#fq','zzzz');ok(t('console: empty search state'),await p.locator('.empty:has-text("No assets match")').count()>0);
  await p.click('[data-act=clearF]');
- await p.locator('.marker[data-id=A-005]').focus();await p.keyboard.press('Enter').catch(()=>{});
- await p.locator('.marker[data-id=A-005]').click({force:true});await p.waitForTimeout(150);
+ await p.locator('.marker[data-id=A-009]').focus();await p.keyboard.press('Enter');await p.waitForTimeout(120);ok(t('console: marker selectable by keyboard (Enter)'),p.url().endsWith('map/A-009'));
+ await p.locator('.marker[data-id=A-005]').scrollIntoViewIfNeeded();await p.locator('.marker[data-id=A-005]').click();await p.waitForTimeout(150);
  ok(t('console: asset drawer with simulated sensor label'),await p.locator('.card:has-text("SIMULATED SENSOR")').count()>0&&p.url().endsWith('A-005'));
  await go('console/asset/A-005');ok(t('asset: history + sparkline'),await p.locator('.tl li').count()>=3&&await p.locator('svg.spark').count()>0);
  await go('console/reports');

@@ -51,6 +51,11 @@
    "info": ""
   },
   {
+   "name": "desktop: console: marker selectable by keyboard (Enter)",
+   "pass": true,
+   "info": ""
+  },
+  {
    "name": "desktop: console: asset drawer with simulated sensor label",
    "pass": true,
    "info": ""
@@ -217,6 +222,11 @@
   },
   {
    "name": "mobile: console: empty search state",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: console: marker selectable by keyboard (Enter)",
    "pass": true,
    "info": ""
   },

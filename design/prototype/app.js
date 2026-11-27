@@ -174,6 +174,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if
  if(a==='cphoto'){const w=WW.wos.find(x=>x.id===id);w.cphoto=true;rerender()}
  if(a==='complete'){const w=WW.wos.find(x=>x.id===id);if(!w.cphoto){$('#cerr').textContent='Add a completion photo before closing this job.';return}w.status='done';log('Amina W. (synthetic)','Completed (photo attached)',id);toast(id+' completed');location.hash='#/tech'}
 });
+document.addEventListener("keydown",e=>{const m=e.target.closest&&e.target.closest("g.marker");if(m&&(e.key==="Enter"||e.key===" ")){e.preventDefault();location.hash="#/console/map/"+m.dataset.id}});
 // SLA timers refresh
 setInterval(()=>{if(/console\/orders|tech/.test(location.hash)&&!$('#dlg').open&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){const y=scrollY;route();scrollTo(0,y)}},30000);
 route();
