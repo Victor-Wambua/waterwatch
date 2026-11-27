@@ -1,0 +1,43 @@
+{
+  "name": "waterwatch",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WaterWatch: water asset monitoring, community fault reporting, maintenance management and sensor ingestion",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "start": "node src/server.ts",
+    "dev": "node --watch src/server.ts",
+    "seed": "node src/scripts/seed.ts",
+    "simulate": "node src/sim/simulate.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "audit": "npm audit",
+    "vendor": "node scripts/vendor-leaflet.mjs",
+    "backup": "node src/scripts/backup.ts",
+    "verify-audit": "node src/scripts/verify-audit.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.11",
+    "hono": "^4.13.23",
+    "leaflet": "^1.9.4",
+    "sharp": "^0.35.5",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.1",
+    "@types/leaflet": "^1.9.23",
+    "@types/node": "^26.6.11",
+    "@vitest/coverage-v8": "^5.1.2",
+    "eslint": "^10.15.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.74.0",
+    "vitest": "^5.1.2"
+  }
+}
