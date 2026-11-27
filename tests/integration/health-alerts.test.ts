@@ -106,6 +106,8 @@ describe('device telemetry, new sensors, simulated labelling', () => {
     expect(alerts('open').filter((a) => a.origin === 'simulated').length).toBeGreaterThan(0);
     const page = await (await (await loggedIn(w, 'a_dispatcher')).get('/console/sensors')).text();
     expect(page).toContain('SIMULATED SENSOR — test environment'); expect(page).toContain('Real device');
+    expect(page).toContain('class="chip sim" title="SIMULATED SENSOR'); expect(page).toContain('Range ');
+    expect(page).toContain('<a href="/console/analytics"'); // mobile tab bar lists every console destination
     const api = (await (await (await loggedIn(w, 'a_auditor')).get('/api/v1/sensors')).json()) as { sensors: { simulated: boolean }[] };
     expect(api.sensors.some((s) => s.simulated)).toBe(true); expect(api.sensors.some((s) => !s.simulated)).toBe(true);
   });

@@ -83,3 +83,32 @@ a.row,.row{text-decoration:none;color:var(--ink)}
 .photo .btn{white-space:normal}
 .photo input[type=file]{max-width:100%;font-size:.85rem}
 @media (max-width:860px){.top .hint{display:none}.top .btn.sm{min-height:36px}}
+/* UX review additions */
+.hit{fill:transparent}
+.mapnote{position:static;display:block;border:0;border-top:1px solid var(--rule);border-radius:0;padding:6px 10px;font-size:.82rem}
+.sparkwrap{display:block}.sparknote{display:block;font-size:.78rem;margin-top:2px}
+.simbar{margin-bottom:12px}
+.wo{min-width:0;overflow-wrap:anywhere}
+.board .col{min-width:0}
+.photo input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.photo{position:relative}.photo:has(input:focus-visible) .btn{outline:3px solid var(--focus);outline-offset:2px}
+.stepper li{min-height:44px}
+.mobtabs .badge{position:absolute;margin:0;transform:translate(14px,-4px);background:var(--bad);color:var(--surface);border-radius:999px;padding:0 6px;font-size:.7rem}
+.row3.mat{grid-template-columns:1fr 1fr}.row3.mat>:first-child{grid-column:1/-1}
+@media (max-width:860px){
+ .top{position:static}
+ .console,.split,.grid2{grid-template-columns:minmax(0,1fr)}.board{max-width:100%}
+ .top .btn.sm{min-height:44px}
+ .top a.btn.sm[href="/account"]{max-width:46vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .mobtabs{overflow-x:auto;contain:inline-size}
+ .mobtabs a{flex:1 0 auto;min-width:76px;position:relative}
+ .mapwrap{overflow-x:auto}.mapwrap svg.map{min-width:640px}.mapnote{position:sticky;left:0;width:calc(100vw - 34px)}
+ .board{grid-template-columns:repeat(5,minmax(82vw,1fr));scroll-snap-type:x mandatory}.board .col{scroll-snap-align:start}
+ .row,.list .row{min-height:48px}
+ .phonebody .btn.big{min-height:56px}
+ .phone .stepper{flex-direction:row;flex-wrap:wrap}.phone .stepper li{flex:1 1 45%}
+}
+@media (prefers-contrast:more){.btn,input,select,textarea{border-color:var(--ink)}}
+/* screen-reader-only labels inside scrolling regions must be clipped by that region, else they widen the page on phones */
+.board,.tablewrap,.mapwrap{position:relative}
+main table{max-width:100%}

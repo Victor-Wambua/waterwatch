@@ -32,7 +32,9 @@ const WO_ICON: Record<string, string> = { new: 'clock', assigned: 'user', in_pro
 export const woChip = (s: string, label: string) => chip(s === 'awaiting_parts' ? 'parts' : s === 'completed' || s === 'closed' ? 'done' : s, label, WO_ICON[s] ?? 'clock');
 const HEALTH_ICON: Record<string, string> = { reporting: 'check', late: 'clock', missing: 'wifi-off', out_of_range: 'alert', flatline: 'alert', unknown: 'q' };
 export const healthChip = (h: string, label: string) => chip(h === 'reporting' ? 'ok' : h === 'late' ? 'late' : h === 'unknown' ? 'unknown' : h === 'missing' || h === 'out_of_range' ? 'missing' : 'flatline', label, HEALTH_ICON[h] ?? 'clock');
-export const simChip = () => html`<span class="chip sim">${ic('chip')}SIMULATED SENSOR — test environment</span>`;
+export const simChip = (compact = false) => compact
+  ? html`<span class="chip sim" title="SIMULATED SENSOR — test environment">${ic('chip')}Simulated</span>`
+  : html`<span class="chip sim">${ic('chip')}SIMULATED SENSOR — test environment</span>`;
 export const originChip = (origin: string) => origin === 'synthetic' ? html`<span class="chip sim" title="Synthetic demonstration data">Synthetic</span>` : origin === 'user_submitted' ? html`<span class="chip unknown">User-submitted</span>` : origin === 'imported' ? html`<span class="chip unknown">Imported</span>` : html`<span class="chip unknown">${origin}</span>`;
 export const slaText = (sla: { state: string; remainingMin: number }, status: string): Raw => {
   if (status === 'closed' || status === 'cancelled') return html``;
@@ -66,7 +68,7 @@ export const consoleNav = (role: Role, badges: { reports?: number; alerts?: numb
 export function page(o: PageOpts, body: Part): string {
   const nav = o.nav ?? [];
   const rail = nav.length ? html`<nav class="rail" aria-label="Console"><small>${o.orgName ?? ''}</small>${nav.map((n) => html`<a href="${n.href}" ${o.current === n.key ? raw('aria-current="page"') : ''}>${ic(n.icon)}${n.label}${n.badge ? html`<span class="badge" aria-label="${n.badge} new">${n.badge}</span>` : ''}</a>`)}</nav>` : '';
-  const tabs = nav.length ? html`<nav class="mobtabs" aria-label="Console">${nav.slice(0, 5).map((n) => html`<a href="${n.href}" ${o.current === n.key ? raw('aria-current="page"') : ''}>${ic(n.icon)}${n.label.split(' ')[0]}</a>`)}</nav>` : '';
+  const tabs = nav.length ? html`<nav class="mobtabs" aria-label="Console">${nav.map((n) => html`<a href="${n.href}" ${o.current === n.key ? raw('aria-current="page"') : ''}>${ic(n.icon)}${n.label.split(' ')[0]}${n.badge ? html`<span class="badge" aria-label="${n.badge} new">${n.badge}</span>` : ''}</a>`)}</nav>` : '';
   const top = o.bare ? '' : html`<header class="top"><a class="logo" href="/">${raw('<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--brand)"/><path d="M16 5c4 5 7 8.5 7 12.5a7 7 0 0 1-14 0C9 13.5 12 10 16 5z" fill="var(--on-brand)"/><path d="M10 19h12M12 22.5h8" stroke="var(--brand)" stroke-width="2"/></svg>')}WaterWatch</a>
     ${o.isDemo ? html`<span class="sim">Synthetic demonstration data</span>` : ''}${o.simulatedEnv ? html`<span class="sim">Test environment</span>` : ''}<span class="spacer"></span>
     ${o.role ? html`<a class="btn sm" href="/notifications" aria-label="Notifications${o.unread ? `, ${o.unread} unread` : ''}">${ic('bell')}${o.unread ? html`<span class="badge inline">${o.unread}</span>` : ''}</a><a class="btn sm" href="/account">${ic('user')}${o.userName}<span class="hint"> · ${roleLabel[o.role]}</span></a>
@@ -98,7 +100,7 @@ export function schematicMap(assets: MapAsset[], links: { from_asset: string; to
   const pos = new Map(assets.map((a) => [a.id, { x: sx(a.lng), y: sy(a.lat) }]));
   const ls = links.map((l) => { const a = pos.get(l.from_asset), b = pos.get(l.to_asset); return a && b ? html`<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" class="pipe"/>` : ''; });
   const ms = assets.map((a) => { const p = pos.get(a.id) as { x: number; y: number }; const label = a.name.replace(/ \(.*/, '').slice(0, 22);
-    return html`<a href="/console/map?asset=${a.id}" class="marker ${selected === a.id ? 'sel' : ''} ${dim.has(a.id) ? 'dim' : ''}" aria-label="${a.name}, ${STATUS_TEXT[a.status]}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})"><circle class="ring" r="20"/><svg x="-14" y="-14" width="28" height="28" viewBox="0 0 24 24" class="stm ${STATUS_CLASS[a.status]}">${raw(SHAPES[a.status])}</svg>${a.has_sensor ? raw('<circle cx="13" cy="-13" r="4.5" class="sdot"/>') : ''}${small ? '' : html`<text y="30" text-anchor="middle" class="mlabel">${label}</text>`}</a>`; });
+    return html`<a href="/console/map?asset=${a.id}" class="marker ${selected === a.id ? 'sel' : ''} ${dim.has(a.id) ? 'dim' : ''}" aria-label="${a.name}, ${STATUS_TEXT[a.status]}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})"><circle class="hit" r="22"/><circle class="ring" r="20"/><svg x="-14" y="-14" width="28" height="28" viewBox="0 0 24 24" class="stm ${STATUS_CLASS[a.status]}">${raw(SHAPES[a.status])}</svg>${a.has_sensor ? raw('<circle cx="13" cy="-13" r="4.5" class="sdot"/>') : ''}${small ? '' : html`<text y="30" text-anchor="middle" class="mlabel">${label}</text>`}</a>`; });
   return html`<svg class="map" viewBox="0 0 ${W} ${H}" role="group" aria-label="Schematic map of registered assets"><path d="M0 330C120 300 200 360 300 320S520 250 640 300V416H0Z" class="water"/><path d="M0 230C150 210 250 260 360 220S560 150 640 190" class="river"/>${ls}${ms}</svg>`;
 }
 export const mapLegend = () => html`<ul class="legend">${(['operational', 'degraded', 'down', 'contamination', 'unknown'] as AssetStatus[]).map((s) => html`<li>${stIcon(s, 18)} ${STATUS_TEXT[s]}</li>`)}<li><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5" class="sdot"/></svg> Has sensor</li></ul>`;
@@ -127,13 +129,14 @@ const dataTable = (cap: string, head: string[], rows: string[][]) => html`<detai
 
 export function sparkline(label: string, series: { ts: number; value: number }[], from: number, to: number, state: string): Raw {
   const w = 300, h = 70, vals = series.map((s) => s.value);
-  if (!vals.length) return html`<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}: no readings"><text x="8" y="40" class="cl">No readings in this period</text></svg>`;
+  if (!vals.length) return html`<span class="sparkwrap"><span class="hint sparknote">No readings in this period</span></span>`;
   const mn = Math.min(...vals), mx = Math.max(...vals), r = mx - mn || 1, span = to - from || 1;
   const X = (ts: number) => 6 + ((ts - from) / span) * (w - 12), Y = (v: number) => h - 8 - ((v - mn) / r) * (h - 16);
   const d = series.map((s, i) => `${i ? 'L' : 'M'}${X(s.ts).toFixed(1)} ${Y(s.value).toFixed(1)}`).join(' ');
   const last = series[series.length - 1] as { ts: number };
-  const gap = state === 'missing' && X(last.ts) < w - 20 ? html`<rect x="${X(last.ts).toFixed(1)}" y="2" width="${(w - 6 - X(last.ts)).toFixed(1)}" height="${h - 4}" class="gap"/><text x="${(X(last.ts) + 6).toFixed(1)}" y="18" class="gt">No readings</text>` : '';
-  return html`<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}. ${series.length} readings, latest ${vals[vals.length - 1]}. Health: ${state}."><path d="${d}" class="ln"/>${gap}${state === 'flatline' ? html`<text x="${w - 130}" y="14" class="gt warn">Flat-lined (stuck?)</text>` : ''}</svg>`;
+  const gap = state === 'missing' && X(last.ts) < w - 20 ? html`<rect x="${X(last.ts).toFixed(1)}" y="2" width="${(w - 6 - X(last.ts)).toFixed(1)}" height="${h - 4}" class="gap"/>` : '';
+  const note = state === 'missing' ? 'Shaded: no readings since the last point.' : state === 'flatline' ? 'Flat-lined: identical values, sensor may be stuck.' : '';
+  return html`<span class="sparkwrap"><svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}. ${series.length} readings, latest ${vals[vals.length - 1]}. Health: ${state}."><path d="${d}" class="ln"/>${gap}</svg><span class="hint sparknote">Range ${mn} to ${mx}${note ? html`. <b>${note}</b>` : ''}</span></span>`;
 }
 
 export const emptyState = (iconName: string, title: string, hint = '') => html`<div class="empty card">${ic(iconName)}<p><b>${title}</b></p>${hint ? html`<p class="hint">${hint}</p>` : ''}</div>`;
