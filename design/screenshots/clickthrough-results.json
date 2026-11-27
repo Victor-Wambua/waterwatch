@@ -1,0 +1,345 @@
+{
+ "results": [
+  {
+   "name": "desktop: report: empty submit shows error",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: report: missing location error",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: report: contamination shows safety guidance",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: report: Swahili toggle",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: report: offline submit queued",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: report: queue synced",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: report: completes online with timer",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: console: map renders 15 markers",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: console: filter status",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: console: empty search state",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: console: asset drawer with simulated sensor label",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: asset: history + sparkline",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: triage: contamination pinned first",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: triage: report -> work order",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: triage: reject requires reason",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: triage: reject ok",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: board: assign moves new->assigned",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: board: advance",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: board: SLA breach shown with icon+text",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: sensors: missing/flatline/late flagged",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: sensors: simulated ingest labelled",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: analytics: charts render",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: audit: records actions",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: theme toggle",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: tech: job list sorted",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: tech: completion requires photo",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: tech: material validation",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: tech: material saved, KES total",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: tech: complete -> list",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: no horizontal overflow on tech page",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: no page-level horizontal overflow: console/map",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: no page-level horizontal overflow: console/reports",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: no page-level horizontal overflow: console/orders",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "desktop: no page-level horizontal overflow: report",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: report: empty submit shows error",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: report: missing location error",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: report: contamination shows safety guidance",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: report: Swahili toggle",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: report: offline submit queued",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: report: queue synced",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: report: completes online with timer",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: console: map renders 15 markers",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: console: filter status",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: console: empty search state",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: console: asset drawer with simulated sensor label",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: asset: history + sparkline",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: triage: contamination pinned first",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: triage: report -> work order",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: triage: reject requires reason",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: triage: reject ok",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: board: assign moves new->assigned",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: board: advance",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: board: SLA breach shown with icon+text",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: sensors: missing/flatline/late flagged",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: sensors: simulated ingest labelled",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: analytics: charts render",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: audit: records actions",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: theme toggle",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: tech: job list sorted",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: tech: completion requires photo",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: tech: material validation",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: tech: material saved, KES total",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: tech: complete -> list",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: no horizontal overflow on tech page",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: no page-level horizontal overflow: console/map",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: no page-level horizontal overflow: console/reports",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: no page-level horizontal overflow: console/orders",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "mobile: no page-level horizontal overflow: report",
+   "pass": true,
+   "info": ""
+  }
+ ],
+ "consoleErrors": []
+}
