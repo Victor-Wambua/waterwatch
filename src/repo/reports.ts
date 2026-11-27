@@ -73,7 +73,7 @@ export function submitReport(ctx: Ctx, raw: ReportInput, photoId: string | null)
 
   // Same reporter, same asset and category inside the window: treat as a repeat of the same report.
   if (assetId && ctx.settings.duplicateWindowMin > 0) {
-    const ex = ctx.t.get<ReportRow>('SELECT * FROM reports WHERE org_id = :org AND reporter_id = :u AND asset_id = :a AND category = :c AND created_at > :since ORDER BY created_at DESC LIMIT 1',
+    const ex = ctx.t.get<ReportRow>('SELECT * FROM reports WHERE org_id = :org AND reporter_id = :u AND asset_id = :a AND category = :c AND status IN ('new','linked') AND created_at > :since ORDER BY created_at DESC LIMIT 1',
       { u: ctx.actor.id, a: assetId, c: d.category, since: ctx.now - ctx.settings.duplicateWindowMin * 60_000 });
     if (ex) return { id: ex.id, ref: ex.ref, contamination: ex.category === 'contamination', deduplicated: false, queuedDuplicate: true };
   }
