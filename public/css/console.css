@@ -112,3 +112,17 @@ a.row,.row{text-decoration:none;color:var(--ink)}
 /* screen-reader-only labels inside scrolling regions must be clipped by that region, else they widen the page on phones */
 .board,.tablewrap,.mapwrap{position:relative}
 main table{max-width:100%}
+.more>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;padding:0 8px;font-weight:700;color:var(--brand)}.more[open]>summary{margin-bottom:8px}
+.agroup>details>summary{cursor:pointer;min-height:44px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}.agroup .tl{margin-top:8px}
+.tablewrap:focus-visible,.board:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+@media print{
+  .skip,header.top,.rail,.mobtabs,#theme-toggle,#toasts,#live,.filters,.btn,button,.btnrow form,.mapnote{display:none!important}
+  body,.console,main{background:#fff!important;color:#000!important;display:block!important}
+  main{padding:0!important;max-width:none!important}
+  .card,.kpi,.wo,.alertbar{box-shadow:none!important;break-inside:avoid;border:1px solid #666!important;background:#fff!important;color:#000!important}
+  .tablewrap,.board{overflow:visible!important}.board{display:block!important}.col{break-inside:auto;margin-bottom:12px;background:#fff!important}
+  details:not([open])>*:not(summary){display:block!important}
+  a{color:#000!important;text-decoration:underline}
+  .kpis{display:flex!important;flex-wrap:wrap}
+}
+.leafmap{min-height:360px}

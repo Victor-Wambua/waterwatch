@@ -99,8 +99,26 @@ export function schematicMap(assets: MapAsset[], links: { from_asset: string; to
   const sy = (lat: number) => (maxLa === minLa ? H / 2 : padY + ((maxLa - lat) / (maxLa - minLa)) * (H - 2 * padY));
   const pos = new Map(assets.map((a) => [a.id, { x: sx(a.lng), y: sy(a.lat) }]));
   const ls = links.map((l) => { const a = pos.get(l.from_asset), b = pos.get(l.to_asset); return a && b ? html`<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" class="pipe"/>` : ''; });
-  const ms = assets.map((a) => { const p = pos.get(a.id) as { x: number; y: number }; const label = a.name.replace(/ \(.*/, '').slice(0, 22);
-    return html`<a href="/console/map?asset=${a.id}" class="marker ${selected === a.id ? 'sel' : ''} ${dim.has(a.id) ? 'dim' : ''}" aria-label="${a.name}, ${STATUS_TEXT[a.status]}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})"><circle class="hit" r="22"/><circle class="ring" r="20"/><svg x="-14" y="-14" width="28" height="28" viewBox="0 0 24 24" class="stm ${STATUS_CLASS[a.status]}">${raw(SHAPES[a.status])}</svg>${a.has_sensor ? raw('<circle cx="13" cy="-13" r="4.5" class="sdot"/>') : ''}${small ? '' : html`<text y="30" text-anchor="middle" class="mlabel">${label}</text>`}</a>`; });
+  const labelOf = (a: MapAsset) => a.name.replace(/ \(.*/, '').slice(0, 28);
+  // Label placement: try below, above, right, left, then farther below/above; take the first spot that clears every marker and every label already placed.
+  type Box = { x0: number; y0: number; x1: number; y1: number };
+  const overlap = (a: Box, b: Box) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+  const markerBoxes = new Map(assets.map((a) => { const p = pos.get(a.id) as { x: number; y: number }; return [a.id, { x0: p.x - 24, y0: p.y - 24, x1: p.x + 24, y1: p.y + 24 }] as [string, Box]; }));
+  const placed: Box[] = [];
+  const place = new Map<string, { anchor: string; dx: number; dy: number }>();
+  if (!small) for (const a of [...assets].sort((p, q) => (pos.get(p.id) as { y: number }).y - (pos.get(q.id) as { y: number }).y || p.id.localeCompare(q.id))) {
+    const p = pos.get(a.id) as { x: number; y: number }, w = labelOf(a).length * 6.6 + 6;
+    const cands = [{ anchor: 'middle', dx: 0, dy: 36 }, { anchor: 'middle', dx: 0, dy: -26 }, { anchor: 'start', dx: 27, dy: 4 }, { anchor: 'end', dx: -27, dy: 4 }, { anchor: 'middle', dx: 0, dy: 52 }, { anchor: 'middle', dx: 0, dy: -42 }, { anchor: 'start', dx: 27, dy: 20 }, { anchor: 'end', dx: -27, dy: 20 }];
+    const boxOf = (c: (typeof cands)[0]): Box => { const x = p.x + c.dx, x0 = c.anchor === 'middle' ? x - w / 2 : c.anchor === 'start' ? x : x - w; return { x0, y0: p.y + c.dy - 11, x1: x0 + w, y1: p.y + c.dy + 4 }; };
+    const inside = (b: Box) => b.x0 >= 2 && b.x1 <= W - 2 && b.y0 >= 2 && b.y1 <= H - 2;
+    const hits = (b: Box) => placed.filter((q) => overlap(b, q)).length + [...markerBoxes].filter(([id, q]) => id !== a.id && overlap(b, q)).length + (inside(b) ? 0 : 3);
+    let best = cands[0] as (typeof cands)[0], bestHits = Infinity;
+    for (const c of cands) { const h = hits(boxOf(c)); if (h < bestHits) { best = c; bestHits = h; } if (h === 0) break; }
+    place.set(a.id, best); placed.push(boxOf(best));
+  }
+  const ms = assets.map((a) => { const p = pos.get(a.id) as { x: number; y: number }; const label = labelOf(a), lp = place.get(a.id);
+    const name = a.name.includes(label) ? a.name : `${label}, ${a.name}`;
+    return html`<a href="/console/map?asset=${a.id}" class="marker ${selected === a.id ? 'sel' : ''} ${dim.has(a.id) ? 'dim' : ''}" aria-label="${name}, ${STATUS_TEXT[a.status]}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})"><circle class="hit" r="22"/><circle class="ring" r="20"/><svg x="-14" y="-14" width="28" height="28" viewBox="0 0 24 24" class="stm ${STATUS_CLASS[a.status]}">${raw(SHAPES[a.status])}</svg>${a.has_sensor ? raw('<circle cx="13" cy="-13" r="4.5" class="sdot"/>') : ''}${small || !lp ? '' : html`<text x="${lp.dx}" y="${lp.dy}" text-anchor="${lp.anchor}" class="mlabel">${label}</text>`}</a>`; });
   return html`<svg class="map" viewBox="0 0 ${W} ${H}" role="group" aria-label="Schematic map of registered assets"><path d="M0 330C120 300 200 360 300 320S520 250 640 300V416H0Z" class="water"/><path d="M0 230C150 210 250 260 360 220S560 150 640 190" class="river"/>${ls}${ms}</svg>`;
 }
 export const mapLegend = () => html`<ul class="legend">${(['operational', 'degraded', 'down', 'contamination', 'unknown'] as AssetStatus[]).map((s) => html`<li>${stIcon(s, 18)} ${STATUS_TEXT[s]}</li>`)}<li><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5" class="sdot"/></svg> Has sensor</li></ul>`;
@@ -123,7 +141,7 @@ export function lineChart(label: string, items: { label: string; value: number |
 }
 export function hbarChart(label: string, items: { label: string; value: number; text: string }[]): Raw {
   const max = Math.max(1, ...items.map((i) => i.value));
-  return html`<figure class="chart"><figcaption><b>${label}</b></figcaption>${items.length ? html`<ul class="hbars" role="img" aria-label="${label}. ${items.map((i) => `${i.label}: ${i.text}`).join(', ')}">${items.map((i) => html`<li><span class="hl">${i.label}</span><span class="hb"><svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><rect width="${((i.value / max) * 100).toFixed(1)}" height="10" class="bar"/></svg></span><span class="hv">${i.text}</span></li>`)}</ul>` : html`<p class="empty">No data in this period.</p>`}</figure>`;
+  return html`<figure class="chart"><figcaption><b>${label}</b></figcaption>${items.length ? html`<ul class="hbars" aria-label="${label}">${items.map((i) => html`<li><span class="hl">${i.label}</span><span class="hb"><svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><rect width="${((i.value / max) * 100).toFixed(1)}" height="10" class="bar"/></svg></span><span class="hv">${i.text}</span></li>`)}</ul>` : html`<p class="empty">No data in this period.</p>`}</figure>`;
 }
 const dataTable = (cap: string, head: string[], rows: string[][]) => html`<details class="dt"><summary>Data table</summary><table><caption class="sr">${cap}</caption><thead><tr>${head.map((h) => html`<th scope="col">${h}</th>`)}</tr></thead><tbody>${rows.map((r) => html`<tr>${r.map((c, i) => (i === 0 ? html`<th scope="row">${c}</th>` : html`<td class="num">${c}</td>`))}</tr>`)}</tbody></table></details>`;
 

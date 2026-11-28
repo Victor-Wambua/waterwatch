@@ -12,12 +12,15 @@
   });
   // Dialogs: <button data-dialog="tpl-id"> clones <template id="tpl-id"> into the native <dialog>.
   var dlg = document.getElementById('dlg');
+  var opener = null;
+  if (dlg) dlg.addEventListener('close', function () { if (opener && opener.isConnected) opener.focus(); opener = null; });
   document.addEventListener('click', function (e) {
     var el = e.target.closest ? e.target.closest('[data-dialog],[data-close]') : null;
     if (!el || !dlg) return;
     if (el.hasAttribute('data-close')) { if (dlg.open) dlg.close(); return; }
     var tpl = document.getElementById(el.getAttribute('data-dialog'));
     if (!tpl) return;
+    opener = el;
     dlg.innerHTML = '';
     dlg.appendChild(tpl.content.cloneNode(true));
     dlg.showModal();
