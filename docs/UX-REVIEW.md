@@ -33,3 +33,28 @@ Map and triage, asset list and detail, outage reports, work-order board and deta
 
 ## Screenshots
 `docs/screenshots/ux-review/` has before and after pairs (map and work orders on phone, sensor health and map on desktop, technician job on phone).
+
+## Round 2
+
+### Done
+| Item | Result | Evidence |
+|---|---|---|
+| Automated accessibility (axe-core 4.x, dev dependency, `tests/e2e/a11y.spec.ts`) | 120 screen renders (7 roles, 375 and 1280 px, light and dark, wcag2a/aa, 2.1, 2.2 AA and best-practice rules). Serious/critical before: 24 renders affected, 116 nodes (map marker label vs visible name, unfocusable scroll regions, `role=img` list on analytics). After: 0. | test output |
+| Keyboard-only walkthroughs (`tests/e2e/keyboard.spec.ts`) | Skip link first and working, focus visible on every stop, no trap, header then nav then content order, modal traps focus and Escape closes it, map markers work with Enter, report form reaches Send by Tab. Fix: dialogs now return focus to the opener. | 4 tests |
+| Print styles | Print stylesheet hides the shell, flattens the board and tables, avoids breaking cards. Checked with print emulation on orders, analytics, audit and assets (no overflow, chrome hidden). | 4 tests |
+| Contrast | Token pairs re-measured (62 pairs, light and dark): 0 failures. Rendered text: axe color-contrast rule is part of the sweep in both themes: 0 failures. | tools/contrast.mjs tokens, axe |
+| Map label collisions | Labels now use collision-aware placement (below, above, right, left, farther), keep inside the frame and show full names. Checked visually on the seeded map. | `ux-review/r2-map-labels-desktop.png` |
+| Alerts per device | Open alerts are grouped per device with a count and worst severity; single alerts stay as before; actions unchanged. Presentation only. | `ux-review/r2-sensors-grouped-mobile.png` |
+| Completed column | Shows 5, then a "Show N more completed" disclosure; the count in the header is the true total. | e2e |
+| Leaflet tile map | Reviewed with a local dummy tile URL: no horizontal overflow at 375 px, tile-error note appears. Markers were all the same blue; now coloured by status with a name and status tooltip. Markers are still not keyboard reachable; the asset list below is the keyboard alternative. | manual |
+| Platform admin | `/platform` reviewed in the sweep (axe clean, both themes, both widths). Table is now a labelled, focusable scroll region. | axe |
+| Performance (emulated, no throttling) | Map, sensors, orders at 375 px: 6 requests, 50 to 57 KB transferred, CLS 0.000. No changes needed. | `print-perf.spec.ts` |
+| Kiswahili | 31 keys in en and sw, none missing or extra. No overflow at 320 px. Still a DRAFT. | unit-style check, e2e |
+| Prototype | `design/prototype/` gets the bounded completed column and a labelled sensor table region. Still labelled simulated, no network. | |
+
+### Still open
+- Native Kiswahili review and public-health review of the safety wording are still required. Not verified by a native speaker.
+- Real screen reader testing (VoiceOver, NVDA), real device, glare and real-network throttling were not done and cannot be done here.
+- Leaflet markers are not individually keyboard focusable (list alternative provided).
+- Prototype does not model per-device alert grouping (it has no alert list).
+- axe only finds a subset of issues; moderate/minor axe findings were not triaged.
