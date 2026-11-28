@@ -130,3 +130,4 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 @media (max-width:860px){.top{padding:6px 10px;gap:6px}.sim{font-size:.72rem}}
 .wo select{width:100%;max-width:100%}.wo .btn{align-self:flex-start}
 @media (max-width:860px){.kpis{grid-template-columns:repeat(3,1fr)}.kpi b{font-size:1.25rem}.kpi{padding:6px 8px}}
+.more>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700;color:var(--brand)}
